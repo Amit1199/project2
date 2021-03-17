@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.example.demo.EmailSenderService;
 import com.example.demo.dao.PatientRepository;
 import com.example.demo.dto.RegisterStatus;
 import com.example.demo.dto.Status.StatusType;
@@ -29,6 +30,9 @@ public class PatientAction {
 
 	@Autowired
 	private PatientRepository patientRepository;
+	
+	@Autowired
+	EmailSenderService emailSenderService ;
 	
 	@PostMapping("/register")
 	public RegisterStatus createHospital(Patient patient)
@@ -43,8 +47,14 @@ public class PatientAction {
 		status.setMessage("Patient registered successful");
 		status.setStatus(StatusType.SUCCESS);
 		status.setRegisteredCustomerNo(unqNo);
+		
+		emailSenderService.sendSimpleEmail(patient.getEmail(),
+				"You have successfully registered with Covax... You can log with following credentials "
+					+" Username: "	+patient.getUsername()  + "  Password: " + patient.getPassword(),
+					"From Covax!!!");
 		return status;
 	}
+	
 	
 	@GetMapping("/show")
 	public List<Patient> getUsers() {
