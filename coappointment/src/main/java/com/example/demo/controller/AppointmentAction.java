@@ -18,7 +18,7 @@ public class AppointmentAction {
 	private AppointmentRepository appointmentRepository;
 	
 	@PostMapping("/appointment-register")
-	public RegisterStatus createPatient(Appointment appointment)
+	public RegisterStatus createAppointment(Appointment appointment)
 	{
 		appointmentRepository.save(appointment);
 		

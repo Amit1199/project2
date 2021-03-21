@@ -11,12 +11,9 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.servlet.ModelAndView;
-
 import com.example.demo.EmailSenderService;
 import com.example.demo.dao.PatientRepository;
 import com.example.demo.dto.RegisterStatus;
@@ -30,32 +27,31 @@ public class PatientAction {
 
 	@Autowired
 	private PatientRepository patientRepository;
-	
+
 	@Autowired
-	EmailSenderService emailSenderService ;
-	
+	EmailSenderService emailSenderService;	
+
 	@PostMapping("/register")
-	public RegisterStatus createHospital(Patient patient)
-	{
+	public RegisterStatus createPatient(@RequestBody Patient patient) {
 		patientRepository.save(patient);
-		
+
 		Random rand = new Random();
 
 		// Generate random integers in range 0 to 999
 		int unqNo = rand.nextInt(1000);
-		RegisterStatus status=new RegisterStatus();
+		RegisterStatus status = new RegisterStatus();
 		status.setMessage("Patient registered successful");
 		status.setStatus(StatusType.SUCCESS);
-		status.setRegisteredCustomerNo(unqNo);
-		
-		emailSenderService.sendSimpleEmail(patient.getEmail(),
-				"You have successfully registered with Covax... You can log with following credentials "
-					+" Username: "	+patient.getUsername()  + "  Password: " + patient.getPassword(),
-					"From Covax!!!");
+		status.setRegisteredCustomerNo(patient.getId());
+
+		emailSenderService
+				.sendSimpleEmail(patient.getEmail(),
+						"You have successfully registered with Covax... You can log with following credentials "
+								+ " Username: " + patient.getUsername() + "  Password: " + patient.getPassword(),
+						"From Covax!!!");
 		return status;
 	}
-	
-	
+
 	@GetMapping("/show")
 	public List<Patient> getUsers() {
 
@@ -67,9 +63,17 @@ public class PatientAction {
 		return patientRepository.findById(id).get();
 	}
 
-	@PutMapping("/{id}")
-	public void updatePatient(@PathVariable int id, @RequestBody Patient user) {
-		patientRepository.save(user);
+	@PostMapping("/reset/{id}")
+	public boolean updateUser(@PathVariable int id, @RequestBody Patient patient) {
+		// userRepository.save(user);
+		
+		Patient dbpatient = patientRepository.findById(id).get();
+		dbpatient.setUsername(patient.getUsername());
+		dbpatient.setPassword(patient.getPassword());
+		
+		patientRepository.save(dbpatient);
+		
+		return true;
 	}
 
 	@DeleteMapping("/{id}")
@@ -77,19 +81,41 @@ public class PatientAction {
 		patientRepository.deleteById(id);
 	}
 
-
+	@PostMapping("/resetRequest")
+	public String resetRequest(@RequestBody String email)
+	{
+		
+		emailSenderService.sendSimpleEmail(email,
+				"For reset password click on below link... "
+					,"From Covax!!!");
+		return "checkMail";
+	}
+	
+	
 	@PostMapping("/authPtlogin")
-	public ModelAndView Authenticatepatient(String username, String password) {
-		Patient patient = patientRepository.findByUsernameAndPassword(username, password);
-		if (patient != null) {
-			ModelAndView mv = new ModelAndView("login");
-			mv.addObject("patient", patient);
-			return mv;
+	public Patient authenticatePatient(@RequestBody Patient patient) {
+		Patient patient1 = patientRepository.findByUsernameAndPassword(patient.getUsername(), patient.getPassword());
+		if (patient1 != null) {
+			
+			return patient1;
 		} else {
-			ModelAndView mv = new ModelAndView("Appointment");
-			mv.addObject("ptLogFail", 0);
-			return mv;
+			
+			return patient1;
 		}
 	}
 	
+
+	/*
+	 * @PutMapping("/{id}") public void updatePatient(@PathVariable int
+	 * id, @RequestBody Patient user) { patientRepository.save(user); }
+	 */
+	
+	/*
+	 * @PostMapping("/reset") public String updatePassword(@RequestBody Patient
+	 * patient) {
+	 * patientRepository.findByUsername(patient.getUsername()).save(patient);
+	 * 
+	 * return "sucess"; }
+	 */
+
 }

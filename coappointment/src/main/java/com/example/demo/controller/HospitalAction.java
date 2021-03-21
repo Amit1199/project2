@@ -30,7 +30,7 @@ public class HospitalAction {
 	private HospitalRepository hospitalRepository;
 	
 	@PostMapping("/register")
-	public RegisterStatus createPatient(Hospital hospital)
+	public RegisterStatus createHospital(Hospital hospital)
 	{
 		hospitalRepository.save(hospital);
 		
@@ -48,7 +48,7 @@ public class HospitalAction {
 	}
 	
 	@GetMapping("/{hspId}")
-	public Hospital getPatient(@PathVariable int hspId) {
+	public Hospital getHospital(@PathVariable int hspId) {
 		return hospitalRepository.findById(hspId).get();
 	}
 
@@ -74,7 +74,7 @@ public class HospitalAction {
 	}
 
 	@PostMapping("/AuthentHsplogin")
-	public ModelAndView Authenticatepatient(String username, String password) {
+	public ModelAndView authenticateHospital(String username, String password) {
 		Hospital hospital = hospitalRepository.findByUsernameAndPassword(username, password);
 		if (hospital != null) {
 			ModelAndView mv = new ModelAndView("login");

@@ -26,7 +26,27 @@ public class Admin {
 		super();
 		this.name = "admin";
 		this.username = "admin";
-		this.password = "p@ssw0rd)";
+		this.password = "p@ssw0rd";
+	}
+
+
+	public int getId() {
+		return id;
+	}
+
+
+	public String getName() {
+		return name;
+	}
+
+
+	public String getUsername() {
+		return username;
+	}
+
+
+	public String getPassword() {
+		return password;
 	}
 
 	
