@@ -9,5 +9,7 @@ public interface PatientRepository extends JpaRepository<Patient, Integer> {
 
 	Patient findByUsernameAndPassword(String username, String password);
 
-	CrudRepository<Patient, Integer> findByUsername(String username);
+	Patient findByUsername(String username);
+
+	Patient findByEmail(String email);
 }

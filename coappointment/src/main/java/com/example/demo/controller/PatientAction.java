@@ -19,6 +19,8 @@ import com.example.demo.dao.PatientRepository;
 import com.example.demo.dto.RegisterStatus;
 import com.example.demo.dto.Status.StatusType;
 import com.example.demo.model.Patient;
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @RestController
 @CrossOrigin
@@ -29,7 +31,7 @@ public class PatientAction {
 	private PatientRepository patientRepository;
 
 	@Autowired
-	EmailSenderService emailSenderService;	
+	EmailSenderService emailSenderService;
 
 	@PostMapping("/register")
 	public RegisterStatus createPatient(@RequestBody Patient patient) {
@@ -63,12 +65,28 @@ public class PatientAction {
 		return patientRepository.findById(id).get();
 	}
 
-	@PostMapping("/reset/{id}")
-	public boolean updateUser(@PathVariable int id, @RequestBody Patient patient) {
+	/*
+	 * @PostMapping("/reset/{id}") public boolean updateUser(@PathVariable int
+	 * id, @RequestBody Patient patient) { // userRepository.save(user);
+	 * 
+	 * Patient dbpatient = patientRepository.findById(id).get();
+	 * dbpatient.setUsername(patient.getUsername());
+	 * dbpatient.setPassword(patient.getPassword());
+	 * 
+	 * patientRepository.save(dbpatient);
+	 * 
+	 * return true; }
+	 */
+	
+	@PostMapping("/reset/passd")
+	@JsonIgnore
+	@JsonBackReference
+	public boolean updateUser(@RequestBody Patient patient) {
 		// userRepository.save(user);
 		
-		Patient dbpatient = patientRepository.findById(id).get();
-		dbpatient.setUsername(patient.getUsername());
+		//
+		Patient dbpatient = patientRepository.findByUsername(patient.getUsername());
+		/* dbpatient.setUsername(patient.getUsername()); */
 		dbpatient.setPassword(patient.getPassword());
 		
 		patientRepository.save(dbpatient);
@@ -82,34 +100,37 @@ public class PatientAction {
 	}
 
 	@PostMapping("/resetRequest")
-	public String resetRequest(@RequestBody String email)
-	{
+	public String resetRequest(@RequestBody Patient uPatient) {
+
+		Patient patient=patientRepository.findByEmail(uPatient.getEmail());
+		if (patient != null) {
+			 emailSenderService.sendSimpleEmail(uPatient.getEmail(),
+					 "For reset password click on below link... " ,"From Covax!!!");		
+			 return "checkMail";
+		} else {
+			return "You Are Not Registerd Yet,Please Register First to Proceed Further";
+		}
+		 
 		
-		emailSenderService.sendSimpleEmail(email,
-				"For reset password click on below link... "
-					,"From Covax!!!");
-		return "checkMail";
 	}
-	
-	
+
 	@PostMapping("/authPtlogin")
 	public Patient authenticatePatient(@RequestBody Patient patient) {
 		Patient patient1 = patientRepository.findByUsernameAndPassword(patient.getUsername(), patient.getPassword());
 		if (patient1 != null) {
-			
+
 			return patient1;
 		} else {
-			
+
 			return patient1;
 		}
 	}
-	
 
 	/*
 	 * @PutMapping("/{id}") public void updatePatient(@PathVariable int
 	 * id, @RequestBody Patient user) { patientRepository.save(user); }
 	 */
-	
+
 	/*
 	 * @PostMapping("/reset") public String updatePassword(@RequestBody Patient
 	 * patient) {

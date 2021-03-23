@@ -6,6 +6,7 @@ import java.util.Random;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -22,7 +23,9 @@ import com.example.demo.dto.Status.StatusType;
 import com.example.demo.model.Hospital;
 
 
+
 @RestController
+@CrossOrigin
 @RequestMapping("/hospital")
 public class HospitalAction {
 
@@ -30,7 +33,7 @@ public class HospitalAction {
 	private HospitalRepository hospitalRepository;
 	
 	@PostMapping("/register")
-	public RegisterStatus createHospital(Hospital hospital)
+	public RegisterStatus createHospital(@RequestBody Hospital hospital)
 	{
 		hospitalRepository.save(hospital);
 		
@@ -47,9 +50,9 @@ public class HospitalAction {
 		return status;
 	}
 	
-	@GetMapping("/{hspId}")
-	public Hospital getHospital(@PathVariable int hspId) {
-		return hospitalRepository.findById(hspId).get();
+	@GetMapping("/nearBy")
+	public List<Hospital> getHospital(Hospital hospital) {
+		return hospitalRepository.findByPincode(hospital.getPincode());
 	}
 
 	@GetMapping("/view")
@@ -74,17 +77,9 @@ public class HospitalAction {
 	}
 
 	@PostMapping("/AuthentHsplogin")
-	public ModelAndView authenticateHospital(String username, String password) {
-		Hospital hospital = hospitalRepository.findByUsernameAndPassword(username, password);
-		if (hospital != null) {
-			ModelAndView mv = new ModelAndView("login");
-			mv.addObject("hospital", hospital);
-			return mv;
-		} else {
-			ModelAndView mv = new ModelAndView("Appointment");
-			mv.addObject("ptLogFail", 0);
-			return mv;
-		}
+	public Hospital authenticateHospital(@RequestBody Hospital hospital) {
+		Hospital hospital1 = hospitalRepository.findByUsernameAndPassword(hospital.getUsername(), hospital.getPassword());
+return hospital1;
 	}
 	
 }

@@ -4,14 +4,17 @@ import java.util.Random;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import com.example.demo.dao.AppointmentRepository;
 import com.example.demo.dto.RegisterStatus;
 import com.example.demo.dto.Status.StatusType;
 import com.example.demo.model.Appointment;
 
-@Controller
+@RestController
+@CrossOrigin
 public class AppointmentAction {
 
 	@Autowired
