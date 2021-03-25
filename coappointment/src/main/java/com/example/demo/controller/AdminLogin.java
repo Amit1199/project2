@@ -11,7 +11,7 @@ import com.example.demo.dao.AdminRepository;
 import com.example.demo.model.Admin;
 
 @RestController
-@CrossOrigin
+@CrossOrigin(origins = "http://localhost:3000")
 @RequestMapping("/admin")
 public class AdminLogin {
 

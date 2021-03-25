@@ -1,8 +1,6 @@
 package com.example.demo.controller;
 
 import java.util.List;
-import java.util.Random;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
@@ -19,11 +17,9 @@ import com.example.demo.dao.PatientRepository;
 import com.example.demo.dto.RegisterStatus;
 import com.example.demo.dto.Status.StatusType;
 import com.example.demo.model.Patient;
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @RestController
-@CrossOrigin
+@CrossOrigin(origins = "http://localhost:3000")
 @RequestMapping("/patient")
 public class PatientAction {
 
@@ -37,10 +33,12 @@ public class PatientAction {
 	public RegisterStatus createPatient(@RequestBody Patient patient) {
 		patientRepository.save(patient);
 
-		Random rand = new Random();
+		//Random rand = new Random();
 
 		// Generate random integers in range 0 to 999
-		int unqNo = rand.nextInt(1000);
+		//int unqNo = rand.nextInt(1000);
+		
+		
 		RegisterStatus status = new RegisterStatus();
 		status.setMessage("Patient registered successful");
 		status.setStatus(StatusType.SUCCESS);
@@ -57,7 +55,7 @@ public class PatientAction {
 	@GetMapping("/show")
 	public List<Patient> getUsers() {
 
-		return patientRepository.findAll(Sort.by(Direction.DESC, "id"));
+		return patientRepository.findAll(Sort.by(Direction.DESC, "age"));
 	}
 
 	@GetMapping("/{id}")
@@ -77,20 +75,15 @@ public class PatientAction {
 	 * 
 	 * return true; }
 	 */
-	
+
 	@PostMapping("/reset/passd")
-	@JsonIgnore
-	@JsonBackReference
 	public boolean updateUser(@RequestBody Patient patient) {
-		// userRepository.save(user);
-		
-		//
 		Patient dbpatient = patientRepository.findByUsername(patient.getUsername());
 		/* dbpatient.setUsername(patient.getUsername()); */
 		dbpatient.setPassword(patient.getPassword());
-		
+
 		patientRepository.save(dbpatient);
-		
+
 		return true;
 	}
 
@@ -102,41 +95,30 @@ public class PatientAction {
 	@PostMapping("/resetRequest")
 	public String resetRequest(@RequestBody Patient uPatient) {
 
-		Patient patient=patientRepository.findByEmail(uPatient.getEmail());
+		Patient patient = patientRepository.findByEmail(uPatient.getEmail());
 		if (patient != null) {
-			 emailSenderService.sendSimpleEmail(uPatient.getEmail(),
-					 "For reset password click on below link... " ,"From Covax!!!");		
-			 return "checkMail";
+			emailSenderService.sendSimpleEmail(uPatient.getEmail(), "For reset password click on below link... ",
+					"From Covax!!!");
+			return "checkMail";
 		} else {
 			return "You Are Not Registerd Yet,Please Register First to Proceed Further";
 		}
-		 
-		
+
 	}
 
 	@PostMapping("/authPtlogin")
 	public Patient authenticatePatient(@RequestBody Patient patient) {
 		Patient patient1 = patientRepository.findByUsernameAndPassword(patient.getUsername(), patient.getPassword());
 		if (patient1 != null) {
-
+			RegisterStatus status = new RegisterStatus();
+			status.setMessage("Patient registered successful");
+			status.setStatus(StatusType.SUCCESS);
+			status.setRegisteredCustomerNo(patient.getId());
 			return patient1;
 		} else {
 
 			return patient1;
 		}
 	}
-
-	/*
-	 * @PutMapping("/{id}") public void updatePatient(@PathVariable int
-	 * id, @RequestBody Patient user) { patientRepository.save(user); }
-	 */
-
-	/*
-	 * @PostMapping("/reset") public String updatePassword(@RequestBody Patient
-	 * patient) {
-	 * patientRepository.findByUsername(patient.getUsername()).save(patient);
-	 * 
-	 * return "sucess"; }
-	 */
 
 }

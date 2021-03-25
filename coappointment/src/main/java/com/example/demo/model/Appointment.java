@@ -2,14 +2,10 @@ package com.example.demo.model;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
-
-import com.example.demo.enums.AptStatus;
 
 @Entity
 @Table(name = "appointment")
@@ -19,15 +15,22 @@ public class Appointment {
 	private int apId;
 	
 	@Column(nullable = false)
+	private String name;
+	
+	@Column(nullable = false)
+	private String email;
+	
+	
+	@Column(nullable = false)
 	private String apDate;
 	
 	@Column(nullable = false)
 	private String time;
 
-	@Column(nullable = false)
-	@Enumerated(EnumType.STRING)
-	private AptStatus aptStatus;
-
+	/*
+	 * // @Column(nullable = false) // @Enumerated(EnumType.STRING) // private
+	 * AptStatus aptStatus;
+	 */
 	@Column(nullable = false)
 	private int ptId;
 
@@ -38,34 +41,40 @@ public class Appointment {
 		super();
 		// TODO Auto-generated constructor stub
 	}
-
-	/*
-	 * public AppointmentEntity(AptStatus aptStatus, String apDate, int ptId, int
-	 * hspId) { super(); this.aptStatus = aptStatus; this.apDate = apDate; this.ptId
-	 * = ptId; this.hspId = hspId; }
-	 */
 	
-	
-
-	public int getAptId() {
-		return apId;
-	}
-
-	public Appointment(String apDate, String time, AptStatus aptStatus, int ptId, int hspId) {
+	public Appointment(String name, String email, String apDate, String time, int ptId, int hspId) {
 		super();
+		this.name = name;
+		this.email = email;
 		this.apDate = apDate;
 		this.time = time;
-		this.aptStatus = aptStatus;
 		this.ptId = ptId;
 		this.hspId = hspId;
 	}
 
+
+	public String getEmail() {
+		return email;
+	}
+
+	public void setEmail(String email) {
+		this.email = email;
+	}
+	
 	public int getApId() {
 		return apId;
 	}
 
 	public void setApId(int apId) {
 		this.apId = apId;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
 	}
 
 	public String getApDate() {
@@ -84,14 +93,7 @@ public class Appointment {
 		this.time = time;
 	}
 
-	public AptStatus getAptStatus() {
-		return aptStatus;
-	}
-
-	public void setAptStatus(AptStatus aptStatus) {
-		this.aptStatus = aptStatus;
-	}
-
+	
 	public int getPtId() {
 		return ptId;
 	}
@@ -108,22 +110,5 @@ public class Appointment {
 		this.hspId = hspId;
 	}
 	
-
-	/*
-	 * public void setAptId(int aptId) { this.apId = aptId; }
-	 * 
-	 * public AptStatus isAptStatus() { return aptStatus; }
-	 * 
-	 * public void setAptStatus(AptStatus aptStatus) { this.aptStatus = aptStatus; }
-	 * 
-	 * public String getAptDate() { return apDate; }
-	 * 
-	 * public void setAptDate(String aptDate) { this.apDate = aptDate; }
-	 * 
-	 * public int getPtId() { return ptId; }
-	 * 
-	 * public void setPtId(int ptId) { this.ptId = ptId; }
-	 * 
-	 */
 
 }
